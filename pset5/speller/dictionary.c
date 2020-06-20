@@ -53,13 +53,19 @@ unsigned int hash(const char *word)
     int l3 = 0;
     if (strlen(word) > 1)
     {
-        l2 = (int) tolower(word[1]);
-        l2 -= 'a';
-        l2 *= 26;
+        if (isalpha(word[1]))
+        {
+            l2 = (int) tolower(word[1]);
+            l2 -= 'a';
+            l2 *= 26;
+        }
         if (strlen(word) > 2)
         {
-            l3 = (int) tolower(word[2]);
-            l3 -= 'a';
+            if (isalpha(word[2]))
+            {
+                l3 = (int) tolower(word[2]);
+                l3 -= 'a';
+            }
         }
     }
     int hashValue = l1 + l2 + l3;
@@ -80,7 +86,7 @@ bool load(const char *dictionary)
     int check;
 
     //Will repeat til there are no items left in the file
-    while (1 == 1)
+    while (true)
     {
         char word[LENGTH + 1];
         const char *point = &word[0];
@@ -94,25 +100,16 @@ bool load(const char *dictionary)
         int hashPlace = hash(point);
 
         //Finds the last node in the array at the hashPlace index
-        node *tmp = table[hashPlace];
-        node *current;
-        while (tmp != NULL)
-        {
-            current = tmp;
-            tmp = tmp->next;
-            
-        }
-
-        //Makes a new node with the current word as word and NULL for the pointer in next
-        current->next = malloc(sizeof(node));
-        tmp = current->next;
+        node *tmp = malloc(sizeof(node));
         if (tmp == NULL)
         {
             fclose(file);
             return false;
         }
+        node *last = table[hashPlace]->next;
         strcpy(tmp->word, point);
-        tmp->next = NULL;
+        tmp->next = last;
+        table[hashPlace]->next = tmp;
         SIZE += 1;
     }
 
