@@ -11,6 +11,10 @@ function love.load()
     -- Sets up the filter for love to minimize and magnify images and text clearly
     love.graphics.setDefaultFilter('nearest', 'nearest') 
 
+    -- Sets the font to the font from the text file with a font size of 8
+    smallFont = love.graphics.newFont('font.ttf', 8)
+    love.graphics.setFont(smallFont)
+
     -- Sets up the windo and its dimensions
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false, 
@@ -30,12 +34,18 @@ end
 function love.draw()
     push:apply('start')
 
-    love.graphics.printf(
-        'Hello Pong!', -- text to render
-        0,                          -- starting x (0 since it should be in the center)
-        VIRTUAL_HEIGHT / 2 - 6,     -- starting y (halfway down the screen)
-        VIRTUAL_WIDTH,              -- number of pixels to center 
-        'center')                   -- alignment mode
+    -- Sets the background to a different color
+    love.graphics.clear(40 / 255, 45 / 255, 52 / 255, 255 / 255)
+
+    -- Makes the ball at the center of the screeen
+    love.graphics.rectangle('fill', VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 5, 5)
+
+    -- Makes the two paddle at opposite sides of the screen
+    love.graphics.rectangle('fill', 5, 20, 5, 20)
+    love.graphics.rectangle('fill', VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 40, 5, 20)
+
+    -- Prints hello above the ball using the new font
+    love.graphics.printf( "Hello Pong!", 0, 20, VIRTUAL_WIDTH, 'center')
 
     push:apply("end")
 end
