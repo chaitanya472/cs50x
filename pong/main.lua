@@ -45,6 +45,7 @@ function love.load()
         vsync = true,
         resizable = false
     })
+    love.window.setTitle("Pong")
 end
 
 -- Updates the code regardless of the frame rate
@@ -98,7 +99,6 @@ end
 function love.draw()
     push:apply('start')
 
-
     -- Sets the background to a different color
     love.graphics.clear(40 / 255, 45 / 255, 52 / 255, 255 / 255)
 
@@ -127,5 +127,16 @@ function love.draw()
     paddle1:render()
     paddle2:render()
 
+    -- Displays the fps onto the screen
+    displayFPS()
+
     push:apply("end")
+end
+
+-- Prints out the current fps in a different noticble color
+function displayFPS()
+    love.graphics.setColor(0, 1, 0, 1)
+    love.graphics.setFont(smallFont)
+    love.graphics.print("FPS: ".. tostring(love.timer.getFPS()), 40, 20)
+    love.graphics.setColor(1, 1, 1, 1)
 end
