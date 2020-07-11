@@ -19,6 +19,9 @@ function love.load()
     -- Sets up the filter for love to minimize and magnify images and text clearly
     love.graphics.setDefaultFilter('nearest', 'nearest') 
 
+    -- Changes the screens title to Pong
+    love.window.setTitle("Pong")
+
     -- Sets a font to the variable smallFont from file font.TTf with a size of 8
     smallFont = love.graphics.newFont('font.ttf', 8)
     
@@ -33,10 +36,10 @@ function love.load()
     paddle1 = Paddle(5, 20, 5, 20)
     paddle2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
 
-    -- Sets up th ball
+    -- Sets up the ball
     ball = Ball(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 5, 5)
 
-    --Sets up the state for th gam
+    --Sets up the state for the game
     gameState = 'start'
 
     -- Sets up the screeen and its dimensions
@@ -45,14 +48,27 @@ function love.load()
         vsync = true,
         resizable = false
     })
-    love.window.setTitle("Pong")
 end
 
 -- Updates the code regardless of the frame rate
 function love.update(dt)
-    paddle1:update(dt)
-    paddle2:update(dt)
+    
+    -- If the balls hit either paddle deflect the ball to the opposite direction
+    if ball:collides(paddle1) or ball:collides(paddle2) then
+        ball.dx = - ball.dx
+    end
 
+    -- If the ball hits the bottom edge deflects it upwards
+    if ball.y <= 0 then
+        ball.dy = - ball.dy
+        ball.y = 0
+    end
+
+    -- If the ball hits the top edge deflects it downwards
+    if ball.y >= VIRTUAL_HEIGHT - 4 then
+        ball.dy = -ball.dy
+        ball.y = VIRTUAL_HEIGHT - 4
+    end
     -- if player 1 is pressing w paddle will move up and s will make it move down
     if love.keyboard.isDown('w') then
         paddle1.dy = -PADDLE_SPEED
@@ -75,6 +91,8 @@ function love.update(dt)
     if gameState == 'play' then
         ball:update(dt)
     end
+    paddle1:update(dt)
+    paddle2:update(dt)
 end
 
 -- Updates the code when a specific key is pressed
