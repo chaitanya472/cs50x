@@ -53,6 +53,16 @@ end
 -- Updates the code regardless of the frame rate
 function love.update(dt)
     
+    if ball.x <= 0 then
+        player2Score = player2Score + 1
+        ball:reset()
+        gameState = 'start'
+    end
+    if ball.x >= VIRTUAL_WIDTH - 4 then
+        player1Score = player1Score + 1
+        ball:reset()
+        gameState = 'start'
+    end
     -- If the balls hit either paddle deflect the ball to the opposite direction
     if ball:collides(paddle1) or ball:collides(paddle2) then
         ball.dx = - ball.dx
@@ -125,7 +135,7 @@ function love.draw()
 
     -- Prints hello and the current state above the ball using the new font
     if gameState == 'start' then
-        love.graphics.printf("Hello Start State!", 0, 20, VIRTUAL_WIDTH, 'center')
+         love.graphics.printf("Hello Start State!", 0, 20, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'play' then
         love.graphics.printf("Hello Play State!", 0, 20, VIRTUAL_WIDTH, 'center')
     end
