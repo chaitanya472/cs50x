@@ -22,14 +22,17 @@ function love.load()
     -- Changes the screens title to Pong
     love.window.setTitle("Pong")
 
-    -- Sets a font to the variable smallFont from file font.TTf with a size of 8
+    -- Sets up all of the fonts
     smallFont = love.graphics.newFont('font.ttf', 8)
-    
-    -- Sets a font to the variable scoreFont from file font.TTf with a size of 32
     scoreFont = love.graphics.newFont('font.ttf', 32)
-
-    -- Sets a font to the variable victoryFont from file font.TTf with a size of 24
     victoryFont = love.graphics.newFont('font.ttf', 24)
+
+    -- Sets up all .wav files into table sounds
+    sounds = {
+        ['paddle_hit'] = love.audio.newSource('paddle_hit.wav', 'static'),
+        ['point_scored'] = love.audio.newSource('score.wav', 'static'),
+        ['wall_hit'] = love.audio.newSource('wall_hit.wav', 'static')
+    }
 
     -- Sets up the players scores
     player1Score = 0
@@ -70,12 +73,14 @@ end
 function love.update(dt)
 
     -- When player 2 scores adds to player2Score and returns ball to default position
-    -- Sets up the serving player as player 1
+    -- Played sound point_scored and sets up the serving player as player 1
     if ball.x <= 0 then
         player2Score = player2Score + 1
+        sounds['point_scored']:play()
         ball:reset()
         servingPlayer = 1
         ball.dx = 100
+
         -- Sets the winning player to player 2 and state to victory if player 2 wins
         if player2Score >= 3 then
             gameState = 'victory'
@@ -86,12 +91,14 @@ function love.update(dt)
     end
 
     -- When player 1 scores adds to player1Score and returns ball to default position
-    -- Sets up the serving player as player 2
+    -- Plays sound point_scored and sets up the serving player as player 2
     if ball.x >= VIRTUAL_WIDTH - 4 then
         player1Score = player1Score + 1
+        sounds['point_scored']:play()
         ball:reset()
         servingPlayer = 2
         ball.dx = -100
+
         -- Sets the winning player to player 2 and state to victory if player 2 wins
         if player1Score >= 3 then
             gameState = 'victory'
@@ -100,21 +107,27 @@ function love.update(dt)
             gameState = 'serve'
         end
     end
-    -- If the balls hit either paddle deflect the ball to the opposite direction
+    -- If the balls hit either paddle deflect the ball to the opposite direction 
+    -- Plays sound paddle_hit
     if ball:collides(paddle1) or ball:collides(paddle2) then
         ball.dx = - ball.dx
+        sounds['paddle_hit']:play()
     end
 
     -- If the ball hits the bottom edge deflects it upwards
+    -- Plays sound wall_hit
     if ball.y <= 0 then
         ball.dy = - ball.dy
         ball.y = 0
+        sounds['wall_hit']:play()
     end
 
     -- If the ball hits the top edge deflects it downwards
+    -- Plays sound wall_hit
     if ball.y >= VIRTUAL_HEIGHT - 4 then
         ball.dy = -ball.dy
         ball.y = VIRTUAL_HEIGHT - 4
+        sounds['wall_hit']:play()
     end
     -- if player 1 is pressing w paddle will move up and s will make it move down
     if love.keyboard.isDown('w') then
