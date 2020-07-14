@@ -65,8 +65,13 @@ function love.load()
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false, 
         vsync = true,
-        resizable = false
+        resizable = true
     })
+end
+
+-- Allows for the screen to be resized without stretching out sides of the screen
+function love.resize(w, h)
+    push:resize(w, h)
 end
 
 -- Updates the code regardless of the frame rate
