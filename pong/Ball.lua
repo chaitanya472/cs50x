@@ -6,7 +6,7 @@ function Ball:init(x, y, width, height)
     self.y = y
     self.height = height
     self.width = width
-
+    self.speed = 1
     self.dx = 0
     self.dy = math.random(-50, 50)
 end
@@ -27,12 +27,13 @@ function Ball:reset()
     self.x = VIRTUAL_WIDTH / 2 - 2
     self.y = VIRTUAL_HEIGHT / 2 - 2
     self.dy = math.random(-50, 50)
+    self.speed = 1
 end
 
 -- Updates the ball's position based on its dx and dy value
 function Ball:update(dt)
-    self.x = self.x + self.dx * dt
-    self.y = self.y + self.dy * dt
+    self.x = self.x + self.dx * dt * self.speed
+    self.y = self.y + self.dy * dt * self.speed
 end
 
 -- Renders the ball onto the screen

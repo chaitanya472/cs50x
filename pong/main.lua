@@ -113,24 +113,34 @@ function love.update(dt)
         end
     end
     -- If the balls hit either paddle deflect the ball to the opposite direction 
+    -- Also makes the ball faster when colliding with a paddle
     -- Plays sound paddle_hit
-    if ball:collides(paddle1) or ball:collides(paddle2) then
-        ball.dx = - ball.dx
+    if ball:collides(paddle1) then
+        ball.dx = -ball.dx * 1.03
+        ball.speed = ball.speed + 0.05
+        ball.x = paddle1.x + 5
+        sounds['paddle_hit']:play()
+    elseif ball:collides(paddle2) then
+        ball.dx = - ball.dx * 1.03
+        ball.speed = ball.speed + 0.03
+        ball.x = paddle2.x - 5
         sounds['paddle_hit']:play()
     end
 
-    -- If the ball hits the bottom edge deflects it upwards
+    -- If the ball hits the bottom edge deflects it upwards and makes it faster
     -- Plays sound wall_hit
     if ball.y <= 0 then
-        ball.dy = - ball.dy
+        ball.dy = -ball.dy
+        ball.speed = ball.speed + 0.03
         ball.y = 0
         sounds['wall_hit']:play()
     end
 
-    -- If the ball hits the top edge deflects it downwards
+    -- If the ball hits the top edge deflects it downwards annd makes it faster
     -- Plays sound wall_hit
     if ball.y >= VIRTUAL_HEIGHT - 4 then
         ball.dy = -ball.dy
+        ball.speed = ball.speed + 0.03
         ball.y = VIRTUAL_HEIGHT - 4
         sounds['wall_hit']:play()
     end
@@ -143,18 +153,33 @@ function love.update(dt)
         paddle1.dy = 0
     end
 
-    -- if player 2 is pressing up paddle will move up and down will make it move down
-    if love.keyboard.isDown('up') then
-        paddle2.dy = -PADDLE_SPEED
-    elseif love.keyboard.isDown("down") then
-        paddle2.dy = PADDLE_SPEED
-    else 
-        paddle2.dy = 0
-    end
-
-    -- Allows for the ball to move in a random direction when the gameState is play
+    -- Allows for the ball and paddle to move when the gameState is play
     if gameState == 'play' then
         ball:update(dt)
+
+        -- Makes a range in which the paddle will track the ball
+        if ball.x >= VIRTUAL_WIDTH * 2 / 3  then
+
+            -- If paddle 2 is balow the ball it will move up
+            -- If it is above the ball it will move down
+            if ball.y + ball.width <= paddle2.y then
+                paddle2.dy = -PADDLE_SPEED
+            elseif ball.y >= paddle2.y + paddle2.height then
+                paddle2.dy = PADDLE_SPEED
+            else
+                paddle2.dy = 0
+            end
+        else
+
+            -- If the ball is out of its range moves paddle to center of the screen
+            if paddle2.y >=  VIRTUAL_HEIGHT/ 2 then
+                paddle2.dy = -PADDLE_SPEED
+            elseif paddle2.y + paddle2.height <= VIRTUAL_HEIGHT/ 2  then
+                paddle2.dy = PADDLE_SPEED
+            else
+                paddle2.dy = 0
+            end
+        end
     end
     paddle1:update(dt)
     paddle2:update(dt)
