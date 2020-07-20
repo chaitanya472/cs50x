@@ -36,7 +36,7 @@ function love.draw()
     push:apply('start')
 
     -- Moves the screen from its strating place the values below
-    love.graphics.translate(math.floor(-map.camX), math.floor( -map.camY))
+    love.graphics.translate(math.floor(-map.camX + 0.5), math.floor(-map.camY + 0.5))
 
     -- Sets the background color 
     love.graphics.clear(108/255, 140/255, 1, 1)

@@ -27,6 +27,10 @@ function Map:init()
    -- Assigns the spreadsheet as quads to table tileSprites
    self.tileSprites = generateQuads(self.spritesheet, self.tileWidth, self.tileHeight)
 
+   -- Gets the map width and height in pixels
+   self.mapWidthPixels = self.mapWidth * self.tileWidth
+   self.mapHeightPixels = self.mapHeight * self.tileHeight
+
    -- Filling the map with empty tiles
    for y = 1, self.mapHeight do
         for x = 1, self.mapWidth do
@@ -54,9 +58,26 @@ end
 
 -- Updates the values of a map
 function Map:update(dt)
+ 
+    -- Allows for user to control the camera with w, a, s, and d
+    -- Clamps the user at the edges of the map
+    if love.keyboard.isDown('w') then
 
-    -- Increases camX by SCROLL_SPEED each second
-    self.camX = self.camX + SCROLL_SPEED * dt
+        -- Increases camY by negative SCROLL_SPEED each second
+        self.camY = math.max(0, math.floor(self.camY - SCROLL_SPEED * dt))
+    elseif love.keyboard.isDown('a') then
+
+        -- Increases camX by negative SCROLL_SPEED each second
+        self.camX = math.max(0, math.floor(self.camX - SCROLL_SPEED * dt))
+    elseif love.keyboard.isDown('s') then
+
+        -- Increases camY by SCROLL_SPEED each second
+        self.camY = math.min(self.mapHeightPixels - VIRTUAL_HEIGHT, math.floor(self.camY + SCROLL_SPEED * dt))
+    elseif love.keyboard.isDown('d') then
+
+        -- Increases camX by SCROLL_SPEED each second
+        self.camX = math.min(self.mapWidthPixels - VIRTUAL_WIDTH, math.floor(self.camX + SCROLL_SPEED * dt))
+    end
 end
 
 -- renders out the map onto the screen making it visible
