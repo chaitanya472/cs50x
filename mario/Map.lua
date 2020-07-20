@@ -3,6 +3,8 @@ Map = Class{}
 TILE_BRICK = 1
 TILE_EMPTY = 4
 
+local SCROLL_SPEED = 62
+
 -- Assigns all of the values of class map to the object
 function Map:init()
    self.spritesheet = love.graphics.newImage('graphics/spritesheet.png')
@@ -17,6 +19,10 @@ function Map:init()
 
    -- The tile map data for the map
    self.tiles = {}
+
+   -- Sets up the velocity for the camera will move
+   self.camX = 0
+   self.camY = 0
 
    -- Assigns the spreadsheet as quads to table tileSprites
    self.tileSprites = generateQuads(self.spritesheet, self.tileWidth, self.tileHeight)
@@ -41,6 +47,7 @@ function Map:setTile(x, y, tile)
     self.tiles[(y - 1) * self.mapWidth + x] = tile
 end
 
+-- Returns the tile of th e given x and y value
 function Map:getTile(x, y)
     return self.tiles[(y - 1) * self.mapWidth + x]
 end
@@ -48,6 +55,8 @@ end
 -- Updates the values of a map
 function Map:update(dt)
 
+    -- Increases camX by SCROLL_SPEED each second
+    self.camX = self.camX + SCROLL_SPEED * dt
 end
 
 -- renders out the map onto the screen making it visible
