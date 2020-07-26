@@ -1,5 +1,7 @@
 Player = Class{}
 
+MOVE_SPEED = 80
+
 -- Assigns all of the values of class Player to the object
 function Player:init(map)
 
@@ -21,6 +23,12 @@ end
 -- Updates the values of player
 function Player:update(dt)
 
+    -- Allows for the player sprite to move depending on which key is down
+    if love.keyboard.isDown('a') then
+        self.x = self.x - MOVE_SPEED * dt
+    elseif love.keyboard.isDown('d') then
+        self.x = self.x + MOVE_SPEED * dt
+    end
 end
 
 -- Renders out the player onto the screen

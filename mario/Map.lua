@@ -134,26 +134,13 @@ function Map:brickColomn(x)
 end
 -- Updates the values of a map
 function Map:update(dt)
- 
-    -- Allows for user to control the camera with w, a, s, and d
-    -- Clamps the user at the edges of the map
-    if love.keyboard.isDown('w') then
 
-        -- Increases camY by negative SCROLL_SPEED each second
-        self.camY = math.max(0, math.floor(self.camY - SCROLL_SPEED * dt))
-    elseif love.keyboard.isDown('a') then
+    -- Sets camera movement to move with the player
+    -- Makes sure that the camera doesn't move over the edges of the map
+    self.camX = math.max(0,
+        math.min(self.player.x - VIRTUAL_WIDTH / 2,
+            math.min(self. mapWidthPixels - VIRTUAL_WIDTH, self.player.x)))
 
-        -- Increases camX by negative SCROLL_SPEED each second
-        self.camX = math.max(0, math.floor(self.camX - SCROLL_SPEED * dt))
-    elseif love.keyboard.isDown('s') then
-
-        -- Increases camY by SCROLL_SPEED each second
-        self.camY = math.min(self.mapHeightPixels - VIRTUAL_HEIGHT, math.floor(self.camY + SCROLL_SPEED * dt))
-    elseif love.keyboard.isDown('d') then
-
-        -- Increases camX by SCROLL_SPEED each second
-        self.camX = math.min(self.mapWidthPixels - VIRTUAL_WIDTH, math.floor(self.camX + SCROLL_SPEED * dt))
-    end
 
     -- Updates the player
     self.player:update(dt)
