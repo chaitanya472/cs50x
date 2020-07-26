@@ -7,6 +7,8 @@ VIRTUAL_HEIGHT = 243
 Class = require 'class'
 push = require 'push'
 
+require 'Player'
+
 require 'Util'
 
 require 'Map'
@@ -33,6 +35,8 @@ end
 
 -- Updates the screen
 function love.update(dt)
+
+    -- Updates the map
     map:update(dt)
 end
 

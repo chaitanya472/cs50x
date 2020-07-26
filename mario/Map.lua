@@ -22,6 +22,8 @@ local SCROLL_SPEED = 62
 
 -- Assigns all of the values of class map to the object
 function Map:init()
+
+   -- Assigns the png file holding the info for every tile to memory 
    self.spritesheet = love.graphics.newImage('graphics/spritesheet.png')
 
    -- The pixel heigt and width of each tile in our map
@@ -35,11 +37,14 @@ function Map:init()
    -- The tile map data for the map
    self.tiles = {}
 
+   -- Assigning player to class Player
+   self.player = Player(self)
+
    -- Sets up the velocity for the camera will move
    self.camX = 0
    self.camY = -3
 
-   -- Assigns the spreadsheet as quads to table tileSprites
+   -- Assigns spreadsheet as quads to table tileSprites
    self.tileSprites = generateQuads(self.spritesheet, self.tileWidth, self.tileHeight)
 
    -- Gets the map width and height in pixels
@@ -149,6 +154,9 @@ function Map:update(dt)
         -- Increases camX by SCROLL_SPEED each second
         self.camX = math.min(self.mapWidthPixels - VIRTUAL_WIDTH, math.floor(self.camX + SCROLL_SPEED * dt))
     end
+
+    -- Updates the player
+    self.player:update(dt)
 end
 
 -- renders out the map onto the screen making it visible
@@ -160,5 +168,8 @@ function Map:render()
                 (x - 1) * self.tileWidth, (y - 1) * self.tileHeight)
         end
     end
+
+    -- Renders the player making it visible to the screen
+    self.player:render()
 end
 
