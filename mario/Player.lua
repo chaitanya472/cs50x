@@ -2,7 +2,9 @@ Player = Class{}
 
 require 'Animation'
 
-MOVE_SPEED = 80
+local MOVE_SPEED = 80
+local JUMP_VELOCITY = 400
+local GRAVITY = 40
 
 -- Assigns all of the values of class Player to the object
 function Player:init(map)
@@ -14,6 +16,9 @@ function Player:init(map)
     -- The starting x and y of the player
     self.x = map.tileWidth * 10
     self.y = map.tileHeight * (map.mapHeight / 2 - 1) - self.height
+
+    self.dx = 0
+    self.dy = 0
 
     -- Assigns the png file holding all of the player frames to memory
     self.texture = love.graphics.newImage('graphics/blue_alien.png')
@@ -38,7 +43,7 @@ function Player:init(map)
             interval = 1
         },
 
-        -- Animation for when walking
+        -- Animation for walking
         ['walking'] = Animation {
             texture = self.texture,
             frames = {
@@ -47,6 +52,17 @@ function Player:init(map)
                 self.frames[9], self.frames[10], self.frames[11]
             },
             interval = 0.15
+        },
+
+        -- Animation for jumping
+        ['jumping'] = Animation {
+            texture = self.texture,
+            frames = {
+
+                -- only uses frame 3
+                self.frames[3]
+            },
+            interval = 1
         }
     }
 
@@ -59,38 +75,74 @@ function Player:init(map)
         -- beavior for when player is idle
         ['idle'] = function(dt)
 
+            -- When pressing space get ready to use the jumping behavior and animation
+            if love.keyboard.wasPressed('space') then
+                self.dy = -JUMP_VELOCITY
+                self.state = 'jumping'
+                self.animation = self.animations['jumping']
+
             -- When pressing a move left and set animation to walking
-            if love.keyboard.isDown('a') then
-                self.x = self.x - MOVE_SPEED * dt 
+            elseif love.keyboard.isDown('a') then
+                self.dx = -MOVE_SPEED
                 self.direction = 'left'
                 self.animation = self.animations['walking']
 
             -- When pressing d move right and set animation to walking
             elseif love.keyboard.isDown('d') then
-                self.x = self.x + MOVE_SPEED * dt
+                self.dx = MOVE_SPEED
                 self.direction = 'right'
                 self.animation = self.animations['walking']
             else
                 self.animation = self.animations['idle']
+                self.dx = 0
             end
         end,
 
         -- behavior for when player is walking
         ['walking'] = function(dt)
 
+            -- When pressing space get ready to use the jumping behavior and animation
+            if love.keyboard.wasPressed('space') then
+                self.dy = -JUMP_VELOCITY
+                self.state = 'jumping'
+                self.animation = self.animations['jumping']
+
             -- When pressing a move left and keep animation as walking
-            if love.keyboard.isDown('a') then
-                self.x = self.x - MOVE_SPEED * dt
+            elseif love.keyboard.isDown('a') then
+                self.dx = -MOVE_SPEED
                 self.direction = 'left'
                 self.animation = self.animations['walking']
 
             -- When pressing d move right and keep animation as walking
             elseif love.keyboard.isDown('d') then
-                self.x = self.x + MOVE_SPEED * dt
+                self.dx = MOVE_SPEED
                 self.direction = 'right'
                 self.animation = self.animations['walking']
             else
                 self.animation = self.animations['idle']
+                self.dx = 0
+            end
+        end,
+
+        -- behavior for when player is jumping
+        ['jumping'] = function(dt)
+            if love.keyboard.isDown('a') then
+                self.direction = 'left'
+                self.dx = -MOVE_SPEED
+            elseif love.keyboard.isDown('d') then
+                self.direction = 'right'
+                self.dx = MOVE_SPEED
+            end
+
+            -- Slowly pushes the player back down to the ground
+            self.dy = self.dy + GRAVITY
+
+            -- When the player has reached the groud set the state and animation to idle
+            if self.y >= map.tileHeight * (map.mapHeight / 2 - 1) - self.height then
+                self.y = map.tileHeight * (map.mapHeight / 2 - 1) - self.height
+                self.dy = 0
+                self.state = 'idle'
+                self.animationn = self.animations[self.state]
             end
         end
     }
@@ -104,6 +156,10 @@ function Player:update(dt)
 
     -- Updates the animation
     self.animation:update(dt)
+
+    -- Updates the x and y by dx and dy
+    self.x = self.x + self.dx * dt 
+    self.y = self.y + self.dy * dt 
 
 end
 

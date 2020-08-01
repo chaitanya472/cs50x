@@ -28,9 +28,30 @@ function love.load()
     -- Making the screen for our game
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
-        resizable = false,
-        vsync = true
+        resizable = true,
     })
+
+    -- Sets up an empty table
+    love.keyboard.keysPressed = {}
+end
+
+-- called whenever the window is resized
+function love.resize(w, h)
+    push:resize(w, h)
+end
+
+-- called whenever a key is pressed
+function love.keypressed(key)
+    if key == 'escape' then 
+        love.event.quit()
+    end
+
+    -- If a key was pressed table will store the value true
+    love.keyboard.keysPressed[key] = true
+end
+
+function love.keyboard.wasPressed(key)
+    return love.keyboard.keysPressed[key]
 end
 
 -- Updates the screen
@@ -38,6 +59,9 @@ function love.update(dt)
 
     -- Updates the map
     map:update(dt)
+
+    -- Resets the table
+    love.keyboard.keysPressed = {}
 end
 
 function love.draw()
