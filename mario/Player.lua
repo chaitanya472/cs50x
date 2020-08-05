@@ -9,6 +9,8 @@ local GRAVITY = 40
 -- Assigns all of the values of class Player to the object
 function Player:init(map)
 
+    self.map = map
+
     -- The height and width of the player
     self.width = 16
     self.height = 20
@@ -161,6 +163,26 @@ function Player:update(dt)
     self.x = self.x + self.dx * dt 
     self.y = self.y + self.dy * dt 
 
+    -- While jumping checks to see if the player collides with any block 
+    -- that is not empty
+    if self.dy < 0 then
+        if self.map:tileAt(self.x, self.y) ~= TILE_EMPTY or
+            self.map:tileAt(self.x, self.width - 1, self.y) ~= TILE_EMPTY then
+
+            -- reset y velocity
+            self.dy = 0
+
+            --changes JUMP_BLOCK to JUMP_BLOCK_HIT
+            if self.map:tileAt(self.x, self.y) == JUMP_BLOCK then
+                self.map:setTile(math.floor(self.x / self.map.tileWidth) + 1,
+                    math.floor(self.y / self.map.tileHeight) + 1, JUMP_BLOCK_HIT)
+            end
+            if self.map:tileAt(self.x + self.width - 1, self.y) == JUMP_BLOCK then
+                self.map:setTile(math.floor(self.x / self.map.tileWidth) + 1,
+                    math.floor(self.y / self.map.tileHeight) + 1, JUMP_BLOCK_HIT)
+            end
+        end
+    end
 end
 
 -- Renders out the player onto the screen

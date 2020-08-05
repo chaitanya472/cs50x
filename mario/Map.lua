@@ -17,6 +17,7 @@ MUSHROOM_BOTTOM = 11
 
 -- jump block
 JUMP_BLOCK = 5
+JUMP_BLOCK_HIT = 9
 
 local SCROLL_SPEED = 62
 
@@ -114,6 +115,12 @@ function Map:init()
             x = x + 2
         end
     end              
+end
+
+-- gets the tile type at a given pixel coordinate
+function Map:tileAt(x, y)
+    return self:getTile(math.floor(x/ self.tileWidth) + 1,
+        math.floor(y/ self.tileHeight)+ 1)
 end
 
 -- Sets given tile to table tile
