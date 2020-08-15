@@ -1,3 +1,5 @@
+require "Util"
+
 Map = Class{}
 
 TILE_BRICK = 1
@@ -37,6 +39,9 @@ function Map:init()
 
    -- The tile map data for the map
    self.tiles = {}
+
+   -- Assigns a value for gravity in the map
+   self.gravity = 15
 
    -- Assigning player to class Player
    self.player = Player(self)
@@ -104,7 +109,7 @@ function Map:init()
             
             -- 1/15 chance to generate a jump block
             if math.random(15) == 1 then 
-                self:setTile(x, self.mapHeight / 2 -4, JUMP_BLOCK)
+                self:setTile(x, self.mapHeight / 2 - 4, JUMP_BLOCK)
             end
 
             -- Goes to the next vertical line
@@ -119,8 +124,11 @@ end
 
 -- gets the tile type at a given pixel coordinate
 function Map:tileAt(x, y)
-    return self:getTile(math.floor(x/ self.tileWidth) + 1,
-        math.floor(y/ self.tileHeight)+ 1)
+    return  {
+        x = math.floor(x / self.tileWidth) + 1,
+        y = math.floor(y/ self.tileHeight) + 1,
+        id = self:getTile(math.floor(x/ self.tileWidth) + 1, math.floor(y / self.tileHeight)+ 1)
+    }
 end
 
 -- Sets given tile to table tile
@@ -139,18 +147,36 @@ function Map:brickColomn(x)
         self:setTile(x, y, TILE_BRICK)
     end
 end
+
+-- Returns if the player is colliding with the given tile and is collidable
+function Map:collides(tile)
+
+    -- sets up a table of all tiles that should do something when collided
+    local collidables = {
+        TILE_BRICK, JUMP_BLOCK, JUMP_BLOCK_HIT, MUSHROOM_TOP, MUSHROOM_BOTTOM
+    }
+
+    -- Returns true if the give tile is in
+    for _, v in ipairs(collidables) do
+        if tile.id == v then
+            return true
+        end
+    end
+
+    return false
+end
+
 -- Updates the values of a map
 function Map:update(dt)
+
+    -- Updates the player
+        self.player:update(dt)
 
     -- Sets camera movement to move with the player
     -- Makes sure that the camera doesn't move over the edges of the map
     self.camX = math.max(0,
         math.min(self.player.x - VIRTUAL_WIDTH / 2,
             math.min(self. mapWidthPixels - VIRTUAL_WIDTH, self.player.x)))
-
-
-    -- Updates the player
-    self.player:update(dt)
 end
 
 -- renders out the map onto the screen making it visible
