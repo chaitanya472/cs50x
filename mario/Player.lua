@@ -29,6 +29,13 @@ function Player:init(map)
     -- Assigns the png file holding all of the player frames to memory
     self.texture = love.graphics.newImage('graphics/blue_alien.png')
 
+    -- sound effects for the game
+    self.sounds = {
+        ['jump'] = love.audio.newSource('sounds/jump.wav', 'static'),
+        ['hit'] = love.audio.newSource('sounds/hit.wav', 'static'),
+        ['coin'] = love.audio.newSource('sounds/coin.wav', 'static')
+    }
+
     -- Assigns texture as quads to table frames
     self.frames = generateQuads(self.texture, 16, 20)
 
@@ -86,6 +93,7 @@ function Player:init(map)
                 self.dy = -JUMP_VELOCITY
                 self.state = 'jumping'
                 self.animation = self.animations['jumping']
+                self.sounds['jump']:play()
 
             -- When pressing a move left and set animation to walking
             elseif love.keyboard.isDown('a') then
@@ -117,6 +125,7 @@ function Player:init(map)
                 self.dy = -JUMP_VELOCITY
                 self.state = 'jumping'
                 self.animation = self.animations['jumping']
+                self.sounds['jump']:play()
 
             -- When pressing a move left and keep animation as walking
             elseif love.keyboard.isDown('a') then
@@ -219,14 +228,33 @@ function Player:calculateJumps()
             -- reset y velocity
             self.dy = 0
 
+            -- Variables to keep track of when to play which soun
+            local playCoin = false
+            local playHit = false
+
             --changes JUMP_BLOCK to JUMP_BLOCK_HIT
             if self.map:tileAt(self.x, self.y).id == JUMP_BLOCK then
                 self.map:setTile(math.floor(self.x / self.map.tileWidth) + 1,
                     math.floor(self.y / self.map.tileHeight) + 1, JUMP_BLOCK_HIT)
+                    playCoin = true 
+            else
+                playHit = true 
             end
             if self.map:tileAt(self.x + self.width - 1, self.y).id == JUMP_BLOCK then
-                self.map:setTile(math.floor(self.x + self.width - 1 / self.map.tileWidth) + 1,
+                self.map:setTile(math.floor((self.x + self.width - 1) / self.map.tileWidth) + 1,
                     math.floor(self.y / self.map.tileHeight) + 1, JUMP_BLOCK_HIT)
+                playCoin = true
+            else
+                playHit = true
+            end
+
+            -- When playCoin has been set to true plays coin sound
+            if playCoin then
+                self.sounds['coin']:play()
+
+            -- When playHit has been set to true plays hit sound
+            elseif playHit then
+                self.sounds['hit']:play()
             end
         end
     end

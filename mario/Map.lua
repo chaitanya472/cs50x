@@ -29,6 +29,9 @@ function Map:init()
    -- Assigns the png file holding the info for every tile to memory 
    self.spritesheet = love.graphics.newImage('graphics/spritesheet.png')
 
+   -- The audio source for map
+   self.music = love.audio.newSource('sounds/music.wav', 'static')
+
    -- The pixel heigt and width of each tile in our map
    self.tileWidth = 16
    self.tileHeight = 16
@@ -119,7 +122,11 @@ function Map:init()
             -- Skips two lines making a gap
             x = x + 2
         end
-    end              
+    end 
+    
+    -- Starts playing the background music
+    self.music:setLooping(true)
+    self.music:play()
 end
 
 -- gets the tile type at a given pixel coordinate
